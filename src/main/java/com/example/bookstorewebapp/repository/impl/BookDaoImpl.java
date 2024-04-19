@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class BookDaoImpl implements BookRepository {
-
     private final SessionFactory sessionFactory;
 
     @Autowired
