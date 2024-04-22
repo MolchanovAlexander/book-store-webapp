@@ -24,7 +24,7 @@ public class BookController {
 
     @GetMapping
     @CrossOrigin(origins = {LOCAL_URL, URL})
-    public List<BookDto> getAllEmployee() {
+    public List<BookDto> getAll() {
         return bookService.findAll();
     }
 
@@ -36,7 +36,7 @@ public class BookController {
 
     @GetMapping("/{id}")
     @CrossOrigin(origins = {LOCAL_URL, URL})
-    public BookDto findById(@PathVariable Long id) {
+    public BookDto getBookById(@PathVariable Long id) {
         return bookService.findById(id);
     }
 }
