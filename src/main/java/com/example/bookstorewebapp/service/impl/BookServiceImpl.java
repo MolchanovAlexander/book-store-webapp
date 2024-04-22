@@ -1,28 +1,40 @@
 package com.example.bookstorewebapp.service.impl;
 
+import com.example.bookstorewebapp.dto.BookDto;
+import com.example.bookstorewebapp.dto.CreateBookRequestDto;
+import com.example.bookstorewebapp.exception.EntityNotFoundException;
+import com.example.bookstorewebapp.mapper.BookMapper;
 import com.example.bookstorewebapp.model.Book;
 import com.example.bookstorewebapp.repository.BookRepository;
 import com.example.bookstorewebapp.service.BookService;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
-    @Autowired
-    public BookServiceImpl(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
+    @Override
+    public BookDto create(CreateBookRequestDto requestDto) {
+        Book book = bookMapper.toModel(requestDto);
+        return bookMapper.toDto(bookRepository.save(book));
     }
 
     @Override
-    public Book save(Book book) {
-        return bookRepository.save(book);
+    public List<BookDto> findAll() {
+        return bookRepository.findAll().stream()
+                .map(bookMapper::toDto)
+                .toList();
     }
 
     @Override
-    public List<Book> findAll() {
-        return bookRepository.findAll();
+    public BookDto findById(Long id) {
+        Book book = bookRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't find item by id: " + id)
+        );
+        return bookMapper.toDto(book);
     }
 }
