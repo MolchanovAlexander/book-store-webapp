@@ -1,5 +1,6 @@
 package com.example.bookstorewebapp.repository.impl;
 
+import com.example.bookstorewebapp.exception.EntityNotFoundException;
 import com.example.bookstorewebapp.model.Book;
 import com.example.bookstorewebapp.repository.BookRepository;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -50,7 +51,7 @@ public class BookRepositoryImpl implements BookRepository {
             criteriaQuery.from(Book.class);
             return session.createQuery(criteriaQuery).getResultList();
         } catch (Exception e) {
-            throw new RuntimeException("Can't get all books", e);
+            throw new EntityNotFoundException("Can't get all books", e);
         }
     }
 
@@ -61,7 +62,7 @@ public class BookRepositoryImpl implements BookRepository {
             return Optional.ofNullable(book);
 
         } catch (Exception e) {
-            throw new RuntimeException("Can't find book with id: " + id, e);
+            throw new EntityNotFoundException("Can't find book with id: " + id, e);
         }
     }
 }
