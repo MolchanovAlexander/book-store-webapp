@@ -5,15 +5,13 @@ import com.example.bookstorewebapp.repository.SpecificationProvider;
 import com.example.bookstorewebapp.repository.SpecificationProviderManager;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
 public class BookSpecificationProviderManager
         implements SpecificationProviderManager<Book> {
-    @Autowired
-    private List<SpecificationProvider<Book>> bookProviders;
+    private final List<SpecificationProvider<Book>> bookProviders;
 
     @Override
     public SpecificationProvider<Book> getSpecificationProvider(String key) {
