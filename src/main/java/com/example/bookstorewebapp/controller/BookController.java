@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/books")
 @RequiredArgsConstructor
 public class BookController {
-    private static final String PATH_ID = "/{id}";
     private final BookService bookService;
 
     @GetMapping
@@ -31,18 +30,18 @@ public class BookController {
         return bookService.create(requestDto);
     }
 
-    @PutMapping(PATH_ID)
+    @PutMapping("/{id}")
     public BookDto updateBook(@PathVariable Long id,
                               @RequestBody CreateBookRequestDto requestDto) {
         return bookService.updateById(id, requestDto);
     }
 
-    @GetMapping(PATH_ID)
+    @GetMapping("/{id}")
     public BookDto getBookById(@PathVariable Long id) {
         return bookService.findById(id);
     }
 
-    @DeleteMapping(PATH_ID)
+    @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {
         bookService.deleteById(id);
     }
