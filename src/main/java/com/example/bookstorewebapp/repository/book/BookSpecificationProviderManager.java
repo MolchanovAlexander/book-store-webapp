@@ -1,9 +1,9 @@
 package com.example.bookstorewebapp.repository.book;
 
 import com.example.bookstorewebapp.model.Book;
-import java.util.List;
 import com.example.bookstorewebapp.repository.SpecificationProvider;
 import com.example.bookstorewebapp.repository.SpecificationProviderManager;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
