@@ -12,22 +12,33 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
+    private static final String TITLE = "title";
+    private static final String AUTHOR = "author";
     @Autowired
     private SpecificationProviderManager<Book> bookSpecificationProviderManager;
 
     @Override
     public Specification<Book> build(BookSearchParameters searchParameters) {
         Specification<Book> defaultSpec = Specification.where(null);
-        if (searchParameters.titles() != null && searchParameters.titles().length > 0) {
-            defaultSpec = defaultSpec
-                    .and(bookSpecificationProviderManager.getSpecificationProvider("title")
-                            .getSpecification(searchParameters.titles()));
+        if (isNotNullAndNotEmpty(searchParameters.titles())) {
+            defaultSpec = getBookSpecification(searchParameters.titles(), TITLE, defaultSpec);
         }
-        if (searchParameters.authors() != null && searchParameters.authors().length > 0) {
-            defaultSpec = defaultSpec
-                    .and(bookSpecificationProviderManager.getSpecificationProvider("author")
-                            .getSpecification(searchParameters.authors()));
+        if (isNotNullAndNotEmpty(searchParameters.authors())) {
+            defaultSpec = getBookSpecification(searchParameters.authors(), AUTHOR, defaultSpec);
         }
         return defaultSpec;
+    }
+
+    private Specification<Book> getBookSpecification(String[] values,
+                                                     String parameter,
+                                                     Specification<Book> defaultSpec) {
+        defaultSpec = defaultSpec
+                .and(bookSpecificationProviderManager.getSpecificationProvider(parameter)
+                        .getSpecification(values));
+        return defaultSpec;
+    }
+
+    private static boolean isNotNullAndNotEmpty(String[] searchParameters) {
+        return searchParameters != null && searchParameters.length > 0;
     }
 }
