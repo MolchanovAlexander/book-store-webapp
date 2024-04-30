@@ -21,6 +21,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     private static final String STATUS = "status";
     private static final String ERROR = "errors";
     private static final String DELIMITER = " ";
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
