@@ -5,7 +5,6 @@ import com.example.bookstorewebapp.model.Book;
 import com.example.bookstorewebapp.repository.SpecificationBuilder;
 import com.example.bookstorewebapp.repository.SpecificationProviderManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +13,7 @@ import org.springframework.stereotype.Component;
 public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
     private static final String TITLE = "title";
     private static final String AUTHOR = "author";
-    @Autowired
-    private SpecificationProviderManager<Book> bookSpecificationProviderManager;
+    private final SpecificationProviderManager<Book> bookSpecificationProviderManager;
 
     @Override
     public Specification<Book> build(BookSearchParameters searchParameters) {

@@ -4,6 +4,7 @@ import com.example.bookstorewebapp.dto.BookDto;
 import com.example.bookstorewebapp.dto.BookSearchParameters;
 import com.example.bookstorewebapp.dto.CreateBookRequestDto;
 import com.example.bookstorewebapp.service.BookService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +28,7 @@ public class BookController {
     }
 
     @PostMapping
-    public BookDto createBook(@RequestBody CreateBookRequestDto requestDto) {
+    public BookDto createBook(@Valid @RequestBody CreateBookRequestDto requestDto) {
         return bookService.create(requestDto);
     }
 
