@@ -22,11 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookController {
     private final BookService bookService;
 
-    @GetMapping
-    public List<BookDto> getAll() {
-        return bookService.findAll();
-    }
-
     @PostMapping
     public BookDto createBook(@Valid @RequestBody CreateBookRequestDto requestDto) {
         return bookService.create(requestDto);
@@ -34,8 +29,13 @@ public class BookController {
 
     @PutMapping("/{id}")
     public BookDto updateBook(@PathVariable Long id,
-                              @RequestBody CreateBookRequestDto requestDto) {
+                              @Valid @RequestBody CreateBookRequestDto requestDto) {
         return bookService.updateById(id, requestDto);
+    }
+
+    @GetMapping
+    public List<BookDto> getAll() {
+        return bookService.findAll();
     }
 
     @GetMapping("/{id}")
@@ -43,13 +43,13 @@ public class BookController {
         return bookService.findById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id) {
-        bookService.deleteById(id);
-    }
-
     @GetMapping("/search")
     public List<BookDto> search(BookSearchParameters searchParameters) {
         return bookService.search(searchParameters);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable Long id) {
+        bookService.deleteById(id);
     }
 }
