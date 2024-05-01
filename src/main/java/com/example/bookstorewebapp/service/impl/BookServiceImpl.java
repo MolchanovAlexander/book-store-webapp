@@ -11,6 +11,7 @@ import com.example.bookstorewebapp.repository.book.BookSpecificationBuilder;
 import com.example.bookstorewebapp.service.BookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +29,18 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> findAll() {
-        return bookRepository.findAll().stream()
+    public BookDto updateById(Long id, CreateBookRequestDto requestDto) {
+        if (!bookRepository.existsById(id)) {
+            throw new EntityNotFoundException("There is no book to update with id: " + id);
+        }
+        Book book = bookMapper.toModel(requestDto);
+        book.setId(id);
+        return bookMapper.toDto(bookRepository.save(book));
+    }
+
+    @Override
+    public List<BookDto> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable).stream()
                 .map(bookMapper::toDto)
                 .toList();
     }
@@ -43,27 +54,19 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        if (!bookRepository.existsById(id)) {
-            throw new EntityNotFoundException("There is no book to delete with id: " + id);
-        }
-        bookRepository.deleteById(id);
-    }
-
-    public BookDto updateById(Long id, CreateBookRequestDto requestDto) {
-        if (!bookRepository.existsById(id)) {
-            throw new EntityNotFoundException("There is no book to update with id: " + id);
-        }
-        Book book = bookMapper.toModel(requestDto);
-        book.setId(id);
-        return bookMapper.toDto(bookRepository.save(book));
-    }
-
     public List<BookDto> search(BookSearchParameters params) {
         Specification<Book> employeeSpecification =
                 specificationBuilder.build(params);
         return bookRepository.findAll(employeeSpecification).stream()
                 .map(bookMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        if (!bookRepository.existsById(id)) {
+            throw new EntityNotFoundException("There is no book to delete with id: " + id);
+        }
+        bookRepository.deleteById(id);
     }
 }
