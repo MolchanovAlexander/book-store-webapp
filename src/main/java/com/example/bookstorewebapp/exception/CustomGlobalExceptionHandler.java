@@ -19,8 +19,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String TIMESTAMP = "timestamp";
-    private static final String STATUS = "status";
     private static final String ERROR = "errors";
+    private static final String STATUS = "status";
     private static final String DELIMITER = " ";
 
     @Override
