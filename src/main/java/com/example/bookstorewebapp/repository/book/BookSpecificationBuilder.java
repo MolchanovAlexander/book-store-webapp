@@ -27,9 +27,10 @@ public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
         return defaultSpec;
     }
 
-    private Specification<Book> getBookSpecification(String[] values,
-                                                     String parameter,
-                                                     Specification<Book> defaultSpec) {
+    private Specification<Book> getBookSpecification(
+            String[] values,
+            String parameter,
+            Specification<Book> defaultSpec) {
         defaultSpec = defaultSpec
                 .and(bookSpecificationProviderManager.getSpecificationProvider(parameter)
                         .getSpecification(values));
