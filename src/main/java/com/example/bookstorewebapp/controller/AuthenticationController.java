@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "User management", description = "Endpoints for managing book")
 @RestController
-@RequestMapping(value = "/api/register")
+@RequestMapping(value = "/api/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @Operation(summary = "Create user", description = "create user entity from request body")
-    @PostMapping
+    @PostMapping("/register")
     @ResponseStatus(value = HttpStatus.CREATED)
     public UserResponseDto createBook(@Valid @RequestBody CreateUserRequestDto requestDto) {
         return authenticationService.create(requestDto);
