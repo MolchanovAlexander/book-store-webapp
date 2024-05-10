@@ -24,7 +24,7 @@ public class AuthenticationController {
     @Operation(summary = "Create user", description = "create user entity from request body")
     @PostMapping("/register")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public UserResponseDto createBook(@Valid @RequestBody CreateUserRequestDto requestDto) {
+    public UserResponseDto createUser(@Valid @RequestBody CreateUserRequestDto requestDto) {
         return authenticationService.create(requestDto);
     }
 }

@@ -3,6 +3,7 @@ package com.example.bookstorewebapp.controller;
 import com.example.bookstorewebapp.dto.book.BookDto;
 import com.example.bookstorewebapp.dto.book.BookSearchParameters;
 import com.example.bookstorewebapp.dto.book.CreateBookRequestDto;
+import com.example.bookstorewebapp.model.User;
 import com.example.bookstorewebapp.service.book.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +32,7 @@ public class BookController {
     private final BookService bookService;
 
     @Operation(summary = "Create book", description = "create book entity from request body")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public BookDto createBook(@Valid @RequestBody CreateBookRequestDto requestDto) {
@@ -36,17 +40,24 @@ public class BookController {
     }
 
     @Operation(summary = "Update book", description = "update book entity from request body")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public BookDto updateBook(@PathVariable Long id,
-                              @Valid @RequestBody CreateBookRequestDto requestDto) {
+    public BookDto updateBook(
+            @PathVariable Long id,
+            @Valid @RequestBody CreateBookRequestDto requestDto
+    ) {
         return bookService.updateById(id, requestDto);
     }
 
     @Operation(summary = "Get all books", description = "Get all books")
     @GetMapping
-    public List<BookDto> getAll(Pageable pageable) {
-        return bookService.findAll(pageable);
+    public List<BookDto> getAll(
+            Authentication authentication,
+            Pageable pageable
+    ) {
+        User user = (User) authentication.getPrincipal();
+        return bookService.findAll(user.getEmail(), pageable);
     }
 
     @Operation(summary = "Get book by id", description = "Get book by id from url /id")
@@ -58,11 +69,15 @@ public class BookController {
     @Operation(summary = "Search book",
             description = "Search book by author and/or title")
     @GetMapping("/search")
-    public List<BookDto> search(BookSearchParameters searchParameters, Pageable pageable) {
+    public List<BookDto> search(
+            BookSearchParameters searchParameters,
+            Pageable pageable
+    ) {
         return bookService.search(searchParameters, pageable);
     }
 
     @Operation(summary = "Delete book by id", description = "Delete book by id from url /id")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Long id) {
