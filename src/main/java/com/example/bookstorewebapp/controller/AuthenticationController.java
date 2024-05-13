@@ -4,7 +4,6 @@ import com.example.bookstorewebapp.dto.user.CreateUserRequestDto;
 import com.example.bookstorewebapp.dto.user.UserLoginRequestDto;
 import com.example.bookstorewebapp.dto.user.UserLoginResponseDto;
 import com.example.bookstorewebapp.dto.user.UserResponseDto;
-import com.example.bookstorewebapp.security.AuthenticationServiceJwt;
 import com.example.bookstorewebapp.service.authentication.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,12 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
-    private final AuthenticationServiceJwt authenticationServiceJwt;
 
     @Operation(summary = "User login", description = "Login user.")
     @PostMapping("/login")
     public UserLoginResponseDto loginUser(@Valid @RequestBody UserLoginRequestDto requestDto) {
-        return authenticationServiceJwt.authenticate(requestDto);
+        return authenticationService.authenticate(requestDto);
     }
 
     @Operation(summary = "Create user", description = "create user entity from request body")
