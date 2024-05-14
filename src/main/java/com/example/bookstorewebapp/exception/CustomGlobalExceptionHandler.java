@@ -39,29 +39,31 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
                 .map(this::getErrorMessage)
                 .toList();
         body.put(ERROR, errors);
-        log.error("Got an error !!! " + ex);
+        log.error(ex.getMessage() + ex);
         return new ResponseEntity<>(body, headers, status);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     protected ResponseEntity<Object> handleMethodEntityNotFoundException(
             EntityNotFoundException ex) {
-        return getObjectResponseEntity(ex.getMessage(), ex);
+        return getObjectResponseEntity(ex.getMessage(), ex, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(RegistrationException.class)
     protected ResponseEntity<Object> handleMethodRegistrationException(
             RegistrationException ex) {
-        return getObjectResponseEntity(ex.getMessage(), ex);
+        return getObjectResponseEntity(ex.getMessage(), ex, HttpStatus.CONFLICT);
     }
 
-    private ResponseEntity<Object> getObjectResponseEntity(String message, Exception ex) {
+    private ResponseEntity<Object> getObjectResponseEntity(
+            String message, Exception ex, HttpStatus status
+    ) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(TIMESTAMP, LocalDateTime.now());
-        body.put(STATUS, HttpStatus.INTERNAL_SERVER_ERROR);
+        body.put(STATUS, status);
         body.put(ERROR, message);
-        log.error("Got an error !!! " + ex);
-        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+        log.error(ex.getMessage() + ex);
+        return new ResponseEntity<>(body, status);
     }
 
     private String getErrorMessage(ObjectError e) {
