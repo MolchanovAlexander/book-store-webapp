@@ -57,7 +57,7 @@ public class BookController {
             Pageable pageable
     ) {
         User user = (User) authentication.getPrincipal();
-        return bookService.findAll(user.getEmail(), pageable);
+        return bookService.findAll();
     }
 
     @Operation(summary = "Get book by id", description = "Get book by id from url /id")
