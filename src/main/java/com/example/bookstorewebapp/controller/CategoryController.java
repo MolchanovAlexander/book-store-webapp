@@ -86,7 +86,7 @@ public class CategoryController {
             description = "Get category by id from url /id"
     )
     @GetMapping("/{id}")
-    public CategoryResponseDto getById(@PathVariable Long id) {
+    public CategoryResponseDto getCategoryById(@PathVariable Long id) {
         return categoryService.getById(id);
     }
 

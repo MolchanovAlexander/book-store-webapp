@@ -24,6 +24,8 @@ public class Category {
     @Column(nullable = false)
     private String name;
     private String description;
+    @Column(nullable = false)
+    private boolean isDeleted;
 
     public Category(Long id) {
         this.id = id;

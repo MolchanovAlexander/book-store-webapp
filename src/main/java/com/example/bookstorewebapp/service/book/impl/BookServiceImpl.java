@@ -7,11 +7,13 @@ import com.example.bookstorewebapp.dto.book.CreateBookRequestDto;
 import com.example.bookstorewebapp.exception.EntityNotFoundException;
 import com.example.bookstorewebapp.mapper.BookMapper;
 import com.example.bookstorewebapp.model.Book;
+import com.example.bookstorewebapp.model.Category;
 import com.example.bookstorewebapp.repository.book.BookRepository;
 import com.example.bookstorewebapp.repository.book.BookSpecificationBuilder;
 import com.example.bookstorewebapp.repository.category.CategoryRepository;
 import com.example.bookstorewebapp.service.book.BookService;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -37,6 +39,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto create(CreateBookRequestDto requestDto) {
+        Set<Long> categoryIds = requestDto.getCategories();
+        List<Category> categories = categoryRepository.findAllById(categoryIds);
+        if (categories.size() != categoryIds.size()) {
+            throw new EntityNotFoundException(
+                    "Some of these categories are absent: " + categoryIds);
+        }
         Book book = bookMapper.toModel(requestDto);
         return bookMapper.toDto(bookRepository.save(book));
     }
