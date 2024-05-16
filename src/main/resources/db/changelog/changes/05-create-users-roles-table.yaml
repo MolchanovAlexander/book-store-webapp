@@ -37,6 +37,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: user_id
+
                   valueComputed: (SELECT id FROM users WHERE email = 'admin@admin.com')
               - column:
                   name: role_id
@@ -59,3 +60,4 @@ databaseChangeLog:
               - column:
                   name: role_id
                   valueComputed: (SELECT id FROM roles WHERE role = 'USER')
+
