@@ -1,6 +1,7 @@
 package com.example.bookstorewebapp.service.book.impl;
 
 import com.example.bookstorewebapp.dto.book.BookDto;
+import com.example.bookstorewebapp.dto.book.BookDtoWithoutCategories;
 import com.example.bookstorewebapp.dto.book.BookSearchParameters;
 import com.example.bookstorewebapp.dto.book.CreateBookRequestDto;
 import com.example.bookstorewebapp.exception.EntityNotFoundException;
@@ -8,6 +9,7 @@ import com.example.bookstorewebapp.mapper.BookMapper;
 import com.example.bookstorewebapp.model.Book;
 import com.example.bookstorewebapp.repository.book.BookRepository;
 import com.example.bookstorewebapp.repository.book.BookSpecificationBuilder;
+import com.example.bookstorewebapp.repository.category.CategoryRepository;
 import com.example.bookstorewebapp.service.book.BookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
+    private final CategoryRepository categoryRepository;
     private final BookMapper bookMapper;
     private final BookSpecificationBuilder specificationBuilder;
+
+    @Override
+    public List<BookDtoWithoutCategories> findAllByCategoryId(Long id, Pageable pageable) {
+        if (!categoryRepository.existsById(id)) {
+            throw new EntityNotFoundException("There is no book to update with id: " + id);
+        }
+        return bookRepository.findAllByCategoryId(id, pageable).stream()
+                .map(bookMapper::toDtoWithoutCategories)
+                .toList();
+    }
 
     @Override
     public BookDto create(CreateBookRequestDto requestDto) {
@@ -39,8 +52,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> findAll() {
-        return bookRepository.findAll().stream()
+    public List<BookDto> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable).stream()
                 .map(bookMapper::toDto)
                 .toList();
     }

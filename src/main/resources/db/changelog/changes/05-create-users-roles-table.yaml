@@ -11,43 +11,51 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_user_id
-                    references: users(id)
               - column:
                   name: role_id
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_role_id
-                    references: roles(id)
-            primaryKey:
-              - columnNames:
-                  - user_id
-                  - role_id
+        - addForeignKeyConstraint:
+            baseTableName: users_roles
+            baseColumnNames: user_id
+            constraintName: fk_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: users_roles
+            baseColumnNames: role_id
+            constraintName: fk_role_id
+            referencedTableName: roles
+            referencedColumnNames: id
+        - addPrimaryKey:
+            tableName: users_roles
+            columnNames: user_id, role_id
+
         - insert:
             tableName: users_roles
             columns:
               - column:
                   name: user_id
-                  value: 1
+                  valueComputed: (SELECT id FROM users WHERE email = 'admin@admin.com')
               - column:
                   name: role_id
-                  value: 2
+                  valueComputed: (SELECT id FROM roles WHERE role = 'ADMIN')
         - insert:
             tableName: users_roles
             columns:
               - column:
                   name: user_id
-                  value: 1
+                  valueComputed: (SELECT id FROM users WHERE email = 'admin@admin.com')
               - column:
                   name: role_id
-                  value: 1
+                  valueComputed: (SELECT id FROM roles WHERE role = 'USER')
         - insert:
             tableName: users_roles
             columns:
               - column:
                   name: user_id
-                  value: 2
+                  valueComputed: (SELECT id FROM users WHERE email = 'alice@alice.com')
               - column:
                   name: role_id
-                  value: 1
+                  valueComputed: (SELECT id FROM roles WHERE role = 'USER')

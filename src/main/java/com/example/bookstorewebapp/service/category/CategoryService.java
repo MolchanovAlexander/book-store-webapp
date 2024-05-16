@@ -1,21 +1,18 @@
 package com.example.bookstorewebapp.service.category;
 
-import com.example.bookstorewebapp.dto.book.BookDto;
-import com.example.bookstorewebapp.dto.book.BookSearchParameters;
-import com.example.bookstorewebapp.dto.book.CreateBookRequestDto;
+import com.example.bookstorewebapp.dto.category.CategoryResponseDto;
+import com.example.bookstorewebapp.dto.category.CreateCategoryRequestDto;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
-    BookDto create(CreateBookRequestDto requestDto);
+    List<CategoryResponseDto> findAll(Pageable pageable);
 
-    List<BookDto> findAll(String email, Pageable pageable);
+    CategoryResponseDto getById(Long id);
 
-    BookDto findById(Long id);
+    CategoryResponseDto save(CreateCategoryRequestDto requestDto);
+
+    CategoryResponseDto updateById(Long id, CreateCategoryRequestDto requestDto);
 
     void deleteById(Long id);
-
-    BookDto updateById(Long id, CreateBookRequestDto requestDto);
-
-    List<BookDto> search(BookSearchParameters params, Pageable pageable);
 }
