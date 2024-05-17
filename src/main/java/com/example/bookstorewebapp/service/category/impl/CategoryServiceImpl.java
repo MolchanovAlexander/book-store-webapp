@@ -8,9 +8,9 @@ import com.example.bookstorewebapp.model.Category;
 import com.example.bookstorewebapp.repository.category.CategoryRepository;
 import com.example.bookstorewebapp.service.category.CategoryService;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponseDto updateById(Long id, CreateCategoryRequestDto requestDto) {
-        isEntityExist(id, MESSAGE_CATEGORY_NOT_EXIST, categoryRepository);
+        isEntityExist(id);
         Category category = categoryMapper.toModel(requestDto);
         category.setId(id);
         return categoryMapper.toDto(categoryRepository.save(category));
@@ -51,13 +51,23 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteById(Long id) {
-        isEntityExist(id, MESSAGE_CATEGORY_NOT_EXIST, categoryRepository);
+        isEntityExist(id);
         categoryRepository.deleteById(id);
     }
 
-    private void isEntityExist(Long id, String message, JpaRepository repository) {
-        if (!repository.existsById(id)) {
-            throw new EntityNotFoundException("There is no " + message + " with id: " + id);
+    public void isAllCategoriesPresent(Set<Long> categoryIds) {
+        List<Category> categories = categoryRepository.findAllById(categoryIds);
+        if (categories.size() != categoryIds.size()) {
+            throw new EntityNotFoundException(
+                    "Some of these categories are absent: " + categoryIds);
+        }
+    }
+
+    public void isEntityExist(Long id) {
+        if (!categoryRepository.existsById(id)) {
+            throw new EntityNotFoundException(
+                    "There is no " + MESSAGE_CATEGORY_NOT_EXIST + " with id: " + id
+            );
         }
     }
 }
