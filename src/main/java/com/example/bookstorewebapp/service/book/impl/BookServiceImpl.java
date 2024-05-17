@@ -79,7 +79,7 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
-    private void isEntityExist(Long id) {
+    public void isEntityExist(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new EntityNotFoundException(
                     "There is no " + MESSAGE_BOOK_NOT_EXIST + " with id: " + id
