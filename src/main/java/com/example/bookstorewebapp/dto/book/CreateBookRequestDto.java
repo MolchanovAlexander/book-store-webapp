@@ -3,6 +3,7 @@ package com.example.bookstorewebapp.dto.book;
 import com.example.bookstorewebapp.validation.Isbn;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -25,5 +26,6 @@ public class CreateBookRequestDto {
     private BigDecimal price;
     private String description;
     private String coverImage;
-    private Set<Long> categories;
+    @NotEmpty
+    private Set<Long> categoryIds;
 }

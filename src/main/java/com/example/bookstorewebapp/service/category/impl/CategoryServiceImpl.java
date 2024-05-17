@@ -10,11 +10,13 @@ import com.example.bookstorewebapp.service.category.CategoryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class CategoryServiceImpl implements CategoryService {
+    private static final String MESSAGE_CATEGORY_NOT_EXIST = "category";
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
@@ -26,9 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponseDto updateById(Long id, CreateCategoryRequestDto requestDto) {
-        if (!categoryRepository.existsById(id)) {
-            throw new EntityNotFoundException("There is no category to update with id: " + id);
-        }
+        isEntityExist(id, MESSAGE_CATEGORY_NOT_EXIST, categoryRepository);
         Category category = categoryMapper.toModel(requestDto);
         category.setId(id);
         return categoryMapper.toDto(categoryRepository.save(category));
@@ -51,9 +51,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteById(Long id) {
-        if (!categoryRepository.existsById(id)) {
-            throw new EntityNotFoundException("There is no category to delete with id: " + id);
-        }
+        isEntityExist(id, MESSAGE_CATEGORY_NOT_EXIST, categoryRepository);
         categoryRepository.deleteById(id);
+    }
+
+    private void isEntityExist(Long id, String message, JpaRepository repository) {
+        if (!repository.existsById(id)) {
+            throw new EntityNotFoundException("There is no " + message + " with id: " + id);
+        }
     }
 }

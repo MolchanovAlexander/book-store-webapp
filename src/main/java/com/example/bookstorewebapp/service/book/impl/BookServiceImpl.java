@@ -17,11 +17,14 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
+    private static final String MESSAGE_CATEGORY_NOT_EXIST = "category";
+    private static final String MESSAGE_BOOK_NOT_EXIST = "book";
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
     private final BookMapper bookMapper;
@@ -29,9 +32,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDtoWithoutCategories> findAllByCategoryId(Long id, Pageable pageable) {
-        if (!categoryRepository.existsById(id)) {
-            throw new EntityNotFoundException("There is no book to update with id: " + id);
-        }
+        isEntityExist(id, MESSAGE_CATEGORY_NOT_EXIST, categoryRepository);
         return bookRepository.findAllByCategoryId(id, pageable).stream()
                 .map(bookMapper::toDtoWithoutCategories)
                 .toList();
@@ -39,7 +40,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto create(CreateBookRequestDto requestDto) {
-        Set<Long> categoryIds = requestDto.getCategories();
+        Set<Long> categoryIds = requestDto.getCategoryIds();
         List<Category> categories = categoryRepository.findAllById(categoryIds);
         if (categories.size() != categoryIds.size()) {
             throw new EntityNotFoundException(
@@ -51,9 +52,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto updateById(Long id, CreateBookRequestDto requestDto) {
-        if (!bookRepository.existsById(id)) {
-            throw new EntityNotFoundException("There is no book to update with id: " + id);
-        }
+        isEntityExist(id, MESSAGE_BOOK_NOT_EXIST, bookRepository);
         Book book = bookMapper.toModel(requestDto);
         book.setId(id);
         return bookMapper.toDto(bookRepository.save(book));
@@ -76,18 +75,22 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDto> search(BookSearchParameters params, Pageable pageable) {
-        Specification<Book> employeeSpecification =
+        Specification<Book> bookSpecification =
                 specificationBuilder.build(params);
-        return bookRepository.findAll(employeeSpecification, pageable).stream()
+        return bookRepository.findAll(bookSpecification, pageable).stream()
                 .map(bookMapper::toDto)
                 .toList();
     }
 
     @Override
     public void deleteById(Long id) {
-        if (!bookRepository.existsById(id)) {
-            throw new EntityNotFoundException("There is no book to delete with id: " + id);
-        }
+        isEntityExist(id, MESSAGE_BOOK_NOT_EXIST, bookRepository);
         bookRepository.deleteById(id);
+    }
+
+    private void isEntityExist(Long id, String message, JpaRepository repository) {
+        if (!repository.existsById(id)) {
+            throw new EntityNotFoundException("There is no " + message + " with id: " + id);
+        }
     }
 }
