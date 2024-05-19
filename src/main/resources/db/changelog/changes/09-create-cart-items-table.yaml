@@ -4,7 +4,7 @@ databaseChangeLog:
       author: salat
       changes:
         - createTable:
-            tableName: shopping_cart
+            tableName: cart_items
             columns:
               - column:
                   name: id
@@ -13,44 +13,30 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
-                  name: user_id
+                  name: shopping_cart_id
                   type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: book_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: int
                   constraints:
                     nullable: false
 
         - addForeignKeyConstraint:
-            baseTableName: shopping_cart
-            baseColumnNames: user_id
-            constraintName: fk_shopping_cart_user
-            referencedTableName: users
+            baseTableName: cart_items
+            baseColumnNames: shopping_cart_id
+            constraintName: fk_cart_item_shopping_cart
+            referencedTableName: shopping_carts
             referencedColumnNames: id
-
-  - changeSet:
-      id: insert-shopping-cart-admin
-      author: salat
-      preConditions:
-        - sqlCheck:
-            expectedResult: 1
-            sql: SELECT COUNT(*) FROM users WHERE email = 'admin@admin.com'
-      changes:
-        - insert:
-            tableName: shopping_cart
-            columns:
-              - column:
-                  name: user_id
-                  value: (SELECT id FROM users WHERE email = 'admin@admin.com')
-
-  - changeSet:
-      id: insert-shopping-cart-alice
-      author: salat
-      preConditions:
-        - sqlCheck:
-            expectedResult: 1
-            sql: SELECT COUNT(*) FROM users WHERE email = 'alice@alice.com'
-      changes:
-        - insert:
-            tableName: shopping_cart
-            columns:
-              - column:
-                  name: user_id
-                  value: (SELECT id FROM users WHERE email = 'alice@alice.com')
+        - addForeignKeyConstraint:
+            baseTableName: cart_items
+            baseColumnNames: book_id
+            constraintName: fk_cart_item_books
+            referencedTableName: books
+            referencedColumnNames: id

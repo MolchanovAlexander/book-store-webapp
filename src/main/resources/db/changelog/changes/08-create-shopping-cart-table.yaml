@@ -4,7 +4,7 @@ databaseChangeLog:
       author: salat
       changes:
         - createTable:
-            tableName: shopping_cart
+            tableName: shopping_carts
             columns:
               - column:
                   name: id
@@ -17,9 +17,15 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
 
         - addForeignKeyConstraint:
-            baseTableName: shopping_cart
+            baseTableName: shopping_carts
             baseColumnNames: user_id
             constraintName: fk_shopping_cart_user
             referencedTableName: users
@@ -28,29 +34,23 @@ databaseChangeLog:
   - changeSet:
       id: insert-shopping-cart-admin
       author: salat
-      preConditions:
-        - sqlCheck:
-            expectedResult: 1
-            sql: SELECT COUNT(*) FROM users WHERE email = 'admin@admin.com'
+
       changes:
         - insert:
-            tableName: shopping_cart
+            tableName: shopping_carts
             columns:
               - column:
                   name: user_id
-                  value: (SELECT id FROM users WHERE email = 'admin@admin.com')
+                  valueComputed: (SELECT id FROM users WHERE email = 'admin@admin.com')
 
   - changeSet:
       id: insert-shopping-cart-alice
       author: salat
-      preConditions:
-        - sqlCheck:
-            expectedResult: 1
-            sql: SELECT COUNT(*) FROM users WHERE email = 'alice@alice.com'
+
       changes:
         - insert:
-            tableName: shopping_cart
+            tableName: shopping_carts
             columns:
               - column:
                   name: user_id
-                  value: (SELECT id FROM users WHERE email = 'alice@alice.com')
+                  valueComputed: (SELECT id FROM users WHERE email = 'alice@alice.com')

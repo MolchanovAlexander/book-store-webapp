@@ -1,10 +1,14 @@
 package com.example.bookstorewebapp.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -24,11 +28,17 @@ public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
     @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    @OneToMany
+    //    @ManyToMany
+//    @JoinTable(
+//            name = "cart_items",
+//            joinColumns = @JoinColumn(name = "shopping_cart_id"),
+//            inverseJoinColumns = @JoinColumn(name = "cart_item_id")
+//    )
+    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> cartItems;
     @Column(nullable = false)
-    private boolean isDeleted;
+    private boolean isDeleted = false;
 }
