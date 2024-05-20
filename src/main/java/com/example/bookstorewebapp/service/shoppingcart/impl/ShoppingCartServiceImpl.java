@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
-    private final CartItemService cartItemService;
     private final ShoppingCartMapper cartMapper;
+    private final CartItemService cartItemService;
     private final CartItemMapper cartItemMapper;
     private final BookService bookService;
 
@@ -73,6 +73,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void deleteCartItemById(Long itemId) {
-        cartItemService.deleteByUserId(itemId);
+        cartItemService.deleteById(itemId);
     }
 }
