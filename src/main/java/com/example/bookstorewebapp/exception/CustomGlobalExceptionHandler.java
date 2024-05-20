@@ -62,7 +62,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         body.put(TIMESTAMP, LocalDateTime.now());
         body.put(STATUS, status);
         body.put(ERROR, message);
-        log.error(ex.getMessage() + ex);
+        log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(body, status);
     }
 

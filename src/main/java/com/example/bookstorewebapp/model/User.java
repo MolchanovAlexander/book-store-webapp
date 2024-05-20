@@ -1,6 +1,5 @@
 package com.example.bookstorewebapp.model;
 
-import com.example.bookstorewebapp.model.role.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

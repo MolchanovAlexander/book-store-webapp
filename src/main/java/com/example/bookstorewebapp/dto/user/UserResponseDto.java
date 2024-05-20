@@ -1,6 +1,6 @@
 package com.example.bookstorewebapp.dto.user;
 
-import com.example.bookstorewebapp.model.role.Role;
+import com.example.bookstorewebapp.model.Role;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;

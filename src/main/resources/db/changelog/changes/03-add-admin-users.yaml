@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: add-users-roles-column
+      id: add-admin-users
       author: salat
       changes:
         - insert:
