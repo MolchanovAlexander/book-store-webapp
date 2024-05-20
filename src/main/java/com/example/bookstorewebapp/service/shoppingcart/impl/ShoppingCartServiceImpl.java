@@ -3,14 +3,12 @@ package com.example.bookstorewebapp.service.shoppingcart.impl;
 import com.example.bookstorewebapp.dto.cartitem.CreateCartItemRequestDto;
 import com.example.bookstorewebapp.dto.cartitem.UpdateCartItemRequestDto;
 import com.example.bookstorewebapp.dto.shoppingcart.ShoppingCartResponseDto;
-import com.example.bookstorewebapp.exception.EntityNotFoundException;
 import com.example.bookstorewebapp.mapper.CartItemMapper;
 import com.example.bookstorewebapp.mapper.ShoppingCartMapper;
 import com.example.bookstorewebapp.model.CartItem;
 import com.example.bookstorewebapp.model.ShoppingCart;
 import com.example.bookstorewebapp.model.User;
 import com.example.bookstorewebapp.repository.shoppingcart.ShoppingCartRepository;
-import com.example.bookstorewebapp.repository.user.UserRepository;
 import com.example.bookstorewebapp.service.book.BookService;
 import com.example.bookstorewebapp.service.cartitem.CartItemService;
 import com.example.bookstorewebapp.service.shoppingcart.ShoppingCartService;
@@ -27,7 +25,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final CartItemService cartItemService;
     private final ShoppingCartMapper cartMapper;
     private final CartItemMapper cartItemMapper;
-    private final UserRepository userRepository;
     private final BookService bookService;
 
     @Override
@@ -40,10 +37,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCartResponseDto getByUserId(Long id) {
         ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(id);
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't find user with id: " + id)
-        );
-        shoppingCart.setUser(user);
         Set<CartItem> cartItems = cartItemService.findAllById(id);
         shoppingCart.setCartItems(cartItems);
         return cartMapper.toDto(shoppingCart);
