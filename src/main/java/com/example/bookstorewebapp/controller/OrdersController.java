@@ -1,6 +1,7 @@
 package com.example.bookstorewebapp.controller;
 
 import com.example.bookstorewebapp.dto.order.CreateOrderRequestDto;
+import com.example.bookstorewebapp.dto.order.OrderResponseDto;
 import com.example.bookstorewebapp.model.User;
 import com.example.bookstorewebapp.service.order.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +37,7 @@ public class OrdersController {
     )
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public String placeOrder(
+    public OrderResponseDto placeOrder(
             Authentication authentication,
             @Valid @RequestBody CreateOrderRequestDto requestDto
             ) {

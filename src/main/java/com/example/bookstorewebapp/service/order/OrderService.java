@@ -1,9 +1,10 @@
 package com.example.bookstorewebapp.service.order;
 
 import com.example.bookstorewebapp.dto.order.CreateOrderRequestDto;
+import com.example.bookstorewebapp.dto.order.OrderResponseDto;
 
 public interface OrderService {
-    String placeOrder(Long userId, CreateOrderRequestDto requestDto);
+    OrderResponseDto placeOrder(Long userId, CreateOrderRequestDto requestDto);
 
     String getOrderedItems(Long userId);
 

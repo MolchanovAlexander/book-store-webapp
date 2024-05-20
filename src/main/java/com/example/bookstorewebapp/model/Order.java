@@ -46,7 +46,7 @@ public class Order {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             mappedBy = "order",
             cascade = CascadeType.ALL,
             orphanRemoval = true
