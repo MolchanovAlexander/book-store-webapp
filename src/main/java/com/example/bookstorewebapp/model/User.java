@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,6 +42,8 @@ public class User implements UserDetails {
     private String shippingAddress;
     @Column(nullable = false)
     private boolean isDeleted = false;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",

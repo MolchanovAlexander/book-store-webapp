@@ -12,6 +12,7 @@ import com.example.bookstorewebapp.repository.role.RoleRepository;
 import com.example.bookstorewebapp.repository.user.UserRepository;
 import com.example.bookstorewebapp.security.JwtUtil;
 import com.example.bookstorewebapp.service.authentication.AuthenticationService;
+import com.example.bookstorewebapp.service.shoppingcart.ShoppingCartService;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +30,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RoleRepository roleRepository;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final ShoppingCartService shoppingCartService;
 
     @Override
     public UserResponseDto create(CreateUserRequestDto requestDto) {
@@ -40,7 +42,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         Role defaultRole = roleRepository.findByRole(Role.RoleName.USER);
         user.setRoles(Collections.singleton(defaultRole));
-        return userMapper.toDto(userRepository.save(user));
+        User userWithId = userRepository.save(user);
+        shoppingCartService.createShoppingCart(userWithId);
+        return userMapper.toDto(userWithId);
     }
 
     public UserLoginResponseDto authenticate(UserLoginRequestDto requestDto) {

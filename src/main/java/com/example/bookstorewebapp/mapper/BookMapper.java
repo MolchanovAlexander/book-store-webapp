@@ -12,7 +12,6 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
 
 @Mapper(config = MapperConfig.class)
 public interface BookMapper {
@@ -40,11 +39,4 @@ public interface BookMapper {
                 .collect(Collectors.toSet());
         book.setCategories(categories);
     }
-
-    //    @Named("bookFromId")
-    //    default Book bookFromId(Long id) {
-    //        Book book = new Book();
-    //        book.setId(id);
-    //        return book;
-    //    }
 }

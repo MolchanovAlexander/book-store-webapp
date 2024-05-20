@@ -1,12 +1,18 @@
 package com.example.bookstorewebapp.service.shoppingcart;
 
-import com.example.bookstorewebapp.dto.cartitem.CartItemResponseDto;
 import com.example.bookstorewebapp.dto.cartitem.CreateCartItemRequestDto;
+import com.example.bookstorewebapp.dto.cartitem.UpdateCartItemRequestDto;
+import com.example.bookstorewebapp.dto.shoppingcart.ShoppingCartResponseDto;
+import com.example.bookstorewebapp.model.User;
 
 public interface ShoppingCartService {
-   // List<CategoryResponseDto> findAll(Pageable pageable);
-    void deleteById(Long id);
-    CartItemResponseDto getById(Long id);
+    void createShoppingCart(User user);
 
-    void save(Long id, CreateCartItemRequestDto requestDto);
+    void deleteCartItemById(Long itemId);
+
+    ShoppingCartResponseDto getByUserId(Long id);
+
+    void save(User user, CreateCartItemRequestDto requestDto);
+
+    void update(Long id, UpdateCartItemRequestDto requestDto);
 }

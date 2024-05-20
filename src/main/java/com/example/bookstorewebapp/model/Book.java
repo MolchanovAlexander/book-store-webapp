@@ -14,13 +14,15 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-@Entity
-@Data
 @SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id = ?")
 @SQLRestriction(value = "is_deleted=false")
+@Entity
+@Data
 @Table(name = "books")
 public class Book {
     @Id
@@ -38,6 +40,8 @@ public class Book {
     private String coverImage;
     @Column(nullable = false)
     private boolean isDeleted = false;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "books_categories",

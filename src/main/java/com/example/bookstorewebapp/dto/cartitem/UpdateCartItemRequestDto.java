@@ -5,10 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class CreateCartItemRequestDto {
-    @NotNull
-    @Min(0)
-    private Long bookId;
+public class UpdateCartItemRequestDto {
     @NotNull
     @Min(1)
     private Integer quantity;
