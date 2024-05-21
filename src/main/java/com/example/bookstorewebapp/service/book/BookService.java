@@ -22,5 +22,5 @@ public interface BookService {
 
     List<BookDto> search(BookSearchParameters params, Pageable pageable);
 
-    void isEntityExist(Long id);
+    void isExist(Long id);
 }

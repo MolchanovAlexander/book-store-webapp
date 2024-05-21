@@ -35,7 +35,7 @@ public class ShoppingCart {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(
-            fetch = FetchType.EAGER,
+            fetch = FetchType.LAZY,
             mappedBy = "shoppingCart",
             cascade = CascadeType.ALL,
             orphanRemoval = true

@@ -20,14 +20,11 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public void updateById(Long id, Integer quantity) {
-        isEntityExist(id);
-        cartItemRepository.updateById(id, quantity);
-    }
-
-    public void isEntityExist(Long id) {
-        if (!cartItemRepository.existsById(id)) {
-            throw new EntityNotFoundException("There is no cart item with id: " + id);
-        }
+        CartItem cartItem = cartItemRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("There is no cart item with id: " + id)
+        );
+        cartItem.setQuantity(quantity);
+        cartItemRepository.save(cartItem);
     }
 
     @Override
@@ -36,8 +33,10 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public void deleteById(Long itemId) {
-        isEntityExist(itemId);
-        cartItemRepository.deleteCartItemById(itemId);
+    public void deleteById(Long id) {
+        if (!cartItemRepository.existsById(id)) {
+            throw new EntityNotFoundException("There is no cart item with id: " + id);
+        }
+        cartItemRepository.deleteById(id);
     }
 }
