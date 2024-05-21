@@ -36,9 +36,8 @@ public class ShoppingCart {
     @ToString.Exclude
     @OneToMany(
             fetch = FetchType.LAZY,
-            mappedBy = "shoppingCart",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            mappedBy = "shoppingCart"
+
     )
     private Set<CartItem> cartItems;
     @Column(nullable = false)

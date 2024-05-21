@@ -48,10 +48,16 @@ public class Order {
     @OneToMany(
             fetch = FetchType.EAGER,
             mappedBy = "order",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            cascade = CascadeType.ALL
     )
     private Set<OrderItem> orderItems;
     @Column(nullable = false)
     private boolean isDeleted = false;
+
+    public Order() {
+    }
+
+    public Order(Long id) {
+        this.id = id;
+    }
 }

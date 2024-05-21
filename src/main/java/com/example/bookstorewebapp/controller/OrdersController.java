@@ -7,6 +7,7 @@ import com.example.bookstorewebapp.service.order.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -37,12 +38,12 @@ public class OrdersController {
     )
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public OrderResponseDto placeOrder(
+    public void placeOrder(
             Authentication authentication,
             @Valid @RequestBody CreateOrderRequestDto requestDto
             ) {
         User user = (User) authentication.getPrincipal();
-        return orderService.placeOrder(user.getId(), requestDto);
+        orderService.placeOrder(user.getId(), requestDto);
     }
 
     @Operation(
@@ -79,12 +80,12 @@ public class OrdersController {
     )
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
-    public String getOrders(
+    public List<OrderResponseDto> getOrders(
             Authentication authentication,
             Pageable pageable
     ) {
         User user = (User) authentication.getPrincipal();
-        return orderService.getAllOrders(user.getId());
+        return orderService.getAllOrders(user.getId(), pageable);
     }
 
     @Operation(
