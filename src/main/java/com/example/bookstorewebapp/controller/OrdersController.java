@@ -2,12 +2,15 @@ package com.example.bookstorewebapp.controller;
 
 import com.example.bookstorewebapp.dto.order.CreateOrderRequestDto;
 import com.example.bookstorewebapp.dto.order.OrderResponseDto;
+import com.example.bookstorewebapp.dto.order.UpdateStatusRequestDto;
+import com.example.bookstorewebapp.dto.orderitem.OrderItemResponseDto;
 import com.example.bookstorewebapp.model.User;
 import com.example.bookstorewebapp.service.order.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,7 +44,7 @@ public class OrdersController {
     public void placeOrder(
             Authentication authentication,
             @Valid @RequestBody CreateOrderRequestDto requestDto
-            ) {
+    ) {
         User user = (User) authentication.getPrincipal();
         orderService.placeOrder(user.getId(), requestDto);
     }
@@ -51,13 +54,12 @@ public class OrdersController {
             description = "get ordered items"
     )
     @GetMapping("/{orderId}/items")
-    public String getOrderedItems(
+    public Set<OrderItemResponseDto> getOrderedItems(
             Authentication authentication,
-            @PathVariable Long orderId,
-            Pageable pageable
+            @PathVariable Long orderId
     ) {
         User user = (User) authentication.getPrincipal();
-        return orderService.getOrderedItems(user.getId());
+        return orderService.getOrderedItems(user.getId(), orderId);
     }
 
     @Operation(
@@ -65,13 +67,13 @@ public class OrdersController {
             description = "get specific ordered item entity "
     )
     @GetMapping("/{orderId}/items/{id}")
-    public String getSpecificOrderedItem(
+    public OrderItemResponseDto getSpecificOrderedItem(
             @PathVariable Long orderId,
             @PathVariable Long id,
             Authentication authentication
     ) {
         User user = (User) authentication.getPrincipal();
-        return orderService.getSpecificOrderedItem(user.getId());
+        return orderService.getSpecificOrderedItem(user.getId(), orderId, id);
     }
 
     @Operation(
@@ -94,11 +96,10 @@ public class OrdersController {
     )
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PatchMapping("/{id}")
-    public String changeStatusOfOrder(
-            Authentication authentication,
-            Pageable pageable,
-            @PathVariable Long id) {
-        User user = (User) authentication.getPrincipal();
-        return orderService.updateStatus(id);
+    public void changeStatusOfOrder(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateStatusRequestDto requestDto
+    ) {
+        orderService.updateStatus(id, requestDto);
     }
 }

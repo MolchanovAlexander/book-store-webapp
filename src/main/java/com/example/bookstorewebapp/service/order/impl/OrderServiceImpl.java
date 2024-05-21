@@ -2,11 +2,12 @@ package com.example.bookstorewebapp.service.order.impl;
 
 import com.example.bookstorewebapp.dto.order.CreateOrderRequestDto;
 import com.example.bookstorewebapp.dto.order.OrderResponseDto;
+import com.example.bookstorewebapp.dto.order.UpdateStatusRequestDto;
+import com.example.bookstorewebapp.dto.orderitem.OrderItemResponseDto;
 import com.example.bookstorewebapp.dto.shoppingcart.ShoppingCartResponseDto;
 import com.example.bookstorewebapp.exception.EntityNotFoundException;
 import com.example.bookstorewebapp.mapper.OrderItemMapper;
 import com.example.bookstorewebapp.mapper.OrderMapper;
-import com.example.bookstorewebapp.model.Book;
 import com.example.bookstorewebapp.model.CartItem;
 import com.example.bookstorewebapp.model.Order;
 import com.example.bookstorewebapp.model.OrderItem;
@@ -28,7 +29,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,13 +44,13 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public OrderResponseDto placeOrder(Long userId, CreateOrderRequestDto requestDto) {
+    public void placeOrder(Long userId, CreateOrderRequestDto requestDto) {
         ShoppingCartResponseDto shoppingCart = shoppingCartService.getByUserId(userId);
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("There is no user with id:" + userId)
         );
         Order model = orderMapper.toModel(requestDto, shoppingCart);
-        Set<CartItem> cartItems = cartItemService.findAllById(userId);//System.out.println(oi);
+        Set<CartItem> cartItems = cartItemService.findAllById(userId);
         List<BigDecimal> priceList = cartItems.stream()
                 .map(c -> c.getBook().getPrice()
                         .multiply(BigDecimal.valueOf(c.getQuantity())))
@@ -65,24 +65,42 @@ public class OrderServiceImpl implements OrderService {
         model.setTotal(total);
 
         Order savedOrder = orderRepository.save(model);
-
         Set<OrderItem> orderItems = cartItems.stream()
                 .map(c -> orderItemMapper.toModel(c, model))
                 .collect(Collectors.toSet());
 
         List<OrderItem> oi = orderItemRepository.saveAll(orderItems);
         savedOrder.setOrderItems(new HashSet<>(oi));
-        return orderMapper.toDto(savedOrder);
+        orderMapper.toDto(savedOrder);
     }
 
     @Override
-    public String getOrderedItems(Long userId) {
-        return " get order items 1, 2, 3 " + userId;
+    public Set<OrderItemResponseDto> getOrderedItems(
+            Long userId, Long orderId
+    ) {
+        Order order = orderRepository.findOrderByUserIdAndOrderId(userId, orderId).orElseThrow(
+                () -> new EntityNotFoundException(
+                        "There is no order with userId:" + userId + " orderId:" + orderId)
+        );
+        return order.getOrderItems().stream()
+                .map(orderItemMapper::toDto)
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public String getSpecificOrderedItem(Long userId) {
-        return "get_spec_item:{ \"value\":\"1\"} " + userId;
+    public OrderItemResponseDto getSpecificOrderedItem(Long userId, Long orderId, Long itemId) {
+        Order order = orderRepository.findOrderByUserIdAndOrderId(userId, orderId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "There is no order with userId:" + userId + " orderId:" + orderId)
+                );
+        return order.getOrderItems().stream()
+                .filter(o -> o.getId().equals(itemId))
+                .map(orderItemMapper::toDto)
+                .findFirst()
+                .orElseThrow(
+                        () -> new EntityNotFoundException(
+                                "There is no order item with id:" + itemId)
+                );
     }
 
     @Override
@@ -93,7 +111,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public String updateStatus(Long userId) {
-        return "status updated " + userId;
+    public void updateStatus(Long orderId, UpdateStatusRequestDto requestDto) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "There is no order with orderId:" + orderId)
+                );
+        order.setStatus(Status.valueOf(requestDto.getStatus()));
+        orderRepository.save(order);
     }
 }
