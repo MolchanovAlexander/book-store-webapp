@@ -16,19 +16,18 @@ import com.example.bookstorewebapp.model.User;
 import com.example.bookstorewebapp.repository.order.OrderRepository;
 import com.example.bookstorewebapp.repository.orderitem.OrderItemRepository;
 import com.example.bookstorewebapp.repository.user.UserRepository;
-import com.example.bookstorewebapp.service.book.BookService;
 import com.example.bookstorewebapp.service.cartitem.CartItemService;
 import com.example.bookstorewebapp.service.order.OrderService;
 import com.example.bookstorewebapp.service.shoppingcart.ShoppingCartService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,17 +38,16 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final CartItemService cartItemService;
     private final OrderItemMapper orderItemMapper;
-    private final BookService bookService;
     private final OrderItemRepository orderItemRepository;
 
-
+    @Transactional
     @Override
     public void placeOrder(Long userId, CreateOrderRequestDto requestDto) {
         ShoppingCartResponseDto shoppingCart = shoppingCartService.getByUserId(userId);
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("There is no user with id:" + userId)
         );
-        Order model = orderMapper.toModel(requestDto, shoppingCart);
+        Order newOrder = orderMapper.toModel(requestDto, shoppingCart);
         Set<CartItem> cartItems = cartItemService.findAllById(userId);
         List<BigDecimal> priceList = cartItems.stream()
                 .map(c -> c.getBook().getPrice()
@@ -59,19 +57,17 @@ public class OrderServiceImpl implements OrderService {
         for (BigDecimal bigDecimal : priceList) {
             total = total.add(bigDecimal);
         }
-        model.setOrderDate(LocalDateTime.now());
-        model.setStatus(Status.PENDING);
-        model.setUser(user);
-        model.setTotal(total);
+        newOrder.setUser(user);
+        newOrder.setOrderDate(LocalDateTime.now());
+        newOrder.setStatus(Status.PENDING);
+        newOrder.setTotal(total);
 
-        Order savedOrder = orderRepository.save(model);
+        orderRepository.save(newOrder);
         Set<OrderItem> orderItems = cartItems.stream()
-                .map(c -> orderItemMapper.toModel(c, model))
+                .map(c -> orderItemMapper.toModel(c, newOrder))
                 .collect(Collectors.toSet());
-
-        List<OrderItem> oi = orderItemRepository.saveAll(orderItems);
-        savedOrder.setOrderItems(new HashSet<>(oi));
-        orderMapper.toDto(savedOrder);
+        orderItemRepository.saveAll(orderItems);
+        cartItemService.deleteAll(cartItems);
     }
 
     @Override

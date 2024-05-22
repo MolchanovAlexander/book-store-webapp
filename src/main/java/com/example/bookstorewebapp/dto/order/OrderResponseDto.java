@@ -1,11 +1,9 @@
 package com.example.bookstorewebapp.dto.order;
 
 import com.example.bookstorewebapp.dto.orderitem.OrderItemResponseDto;
-import com.example.bookstorewebapp.model.OrderItem;
 import com.example.bookstorewebapp.model.Status;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 import lombok.Data;
 

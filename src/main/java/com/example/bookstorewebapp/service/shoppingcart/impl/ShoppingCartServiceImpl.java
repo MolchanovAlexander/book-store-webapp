@@ -79,4 +79,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public void deleteCartItemById(Long itemId) {
         cartItemService.deleteById(itemId);
     }
+
+    private ShoppingCart checkShoppingCart(Long id) {
+        return shoppingCartRepository
+                .findShoppingCartByUserId(id).orElseThrow(
+                        () -> new EntityNotFoundException(
+                                "There is no cart for user with id: " + id)
+                );
+    }
 }
