@@ -40,6 +40,9 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public void deleteByUserId(Long itemId) {
+        if (!cartItemRepository.existsById(itemId)) {
+            throw new EntityNotFoundException("There is no cart item with id:" + itemId);
+        }
         cartItemRepository.deleteById(itemId);
     }
 }

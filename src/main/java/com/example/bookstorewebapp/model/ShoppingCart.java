@@ -36,7 +36,6 @@ public class ShoppingCart {
     @OneToMany(
             fetch = FetchType.LAZY,
             mappedBy = "shoppingCart"
-
     )
     private Set<CartItem> cartItems;
     @Column(nullable = false)

@@ -4,18 +4,18 @@ import com.example.bookstorewebapp.dto.order.CreateOrderRequestDto;
 import com.example.bookstorewebapp.dto.order.OrderResponseDto;
 import com.example.bookstorewebapp.dto.order.UpdateStatusRequestDto;
 import com.example.bookstorewebapp.dto.orderitem.OrderItemResponseDto;
-import com.example.bookstorewebapp.dto.shoppingcart.ShoppingCartResponseDto;
 import com.example.bookstorewebapp.exception.EntityNotFoundException;
 import com.example.bookstorewebapp.mapper.OrderItemMapper;
 import com.example.bookstorewebapp.mapper.OrderMapper;
 import com.example.bookstorewebapp.model.CartItem;
 import com.example.bookstorewebapp.model.Order;
 import com.example.bookstorewebapp.model.OrderItem;
+import com.example.bookstorewebapp.model.ShoppingCart;
 import com.example.bookstorewebapp.model.Status;
 import com.example.bookstorewebapp.model.User;
 import com.example.bookstorewebapp.repository.order.OrderRepository;
 import com.example.bookstorewebapp.repository.orderitem.OrderItemRepository;
-import com.example.bookstorewebapp.repository.user.UserRepository;
+import com.example.bookstorewebapp.service.authentication.AuthenticationService;
 import com.example.bookstorewebapp.service.cartitem.CartItemService;
 import com.example.bookstorewebapp.service.order.OrderService;
 import com.example.bookstorewebapp.service.shoppingcart.ShoppingCartService;
@@ -35,25 +35,19 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ShoppingCartService shoppingCartService;
     private final OrderMapper orderMapper;
-    private final UserRepository userRepository;
     private final CartItemService cartItemService;
     private final OrderItemMapper orderItemMapper;
     private final OrderItemRepository orderItemRepository;
+    private final AuthenticationService authenticationService;
 
     @Transactional
     @Override
     public void placeOrder(Long userId, CreateOrderRequestDto requestDto) {
-        ShoppingCartResponseDto shoppingCart = shoppingCartService.getByUserId(userId);
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("There is no user with id:" + userId)
-        );
-        Order newOrder = orderMapper.toModel(requestDto, shoppingCart);
-        Set<CartItem> cartItems = cartItemService.findAllByShoppingCartId(shoppingCart.getId());
+        ShoppingCart shoppingCart = shoppingCartService.getSoppingCartByUserId(userId);
+        User user = authenticationService.findById(userId);
+        Set<CartItem> cartItems = shoppingCart.getCartItems();
         BigDecimal total = getTotal(cartItems);
-        newOrder.setUser(user);
-        newOrder.setOrderDate(LocalDateTime.now());
-        newOrder.setStatus(Status.PENDING);
-        newOrder.setTotal(total);
+        Order newOrder = fillOrder(requestDto, shoppingCart, user, total);
         orderRepository.save(newOrder);
         orderItemRepository.saveAll(getOrderItems(cartItems, newOrder));
         cartItemService.deleteAll(cartItems);
@@ -105,16 +99,24 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
     }
 
+    private Order fillOrder(
+            CreateOrderRequestDto requestDto,
+            ShoppingCart shoppingCart,
+            User user,
+            BigDecimal total
+    ) {
+        Order newOrder = orderMapper.toModel(requestDto, shoppingCart);
+        newOrder.setUser(user);
+        newOrder.setOrderDate(LocalDateTime.now());
+        newOrder.setStatus(Status.PENDING);
+        newOrder.setTotal(total);
+        return newOrder;
+    }
+
     private BigDecimal getTotal(Set<CartItem> cartItems) {
-        List<BigDecimal> priceList = cartItems.stream()
-                .map(c -> c.getBook().getPrice()
-                        .multiply(BigDecimal.valueOf(c.getQuantity())))
-                .toList();
-        BigDecimal total = new BigDecimal(0);
-        for (BigDecimal bigDecimal : priceList) {
-            total = total.add(bigDecimal);
-        }
-        return total;
+        return cartItems.stream()
+                .map(c -> c.getBook().getPrice().multiply(BigDecimal.valueOf(c.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private Set<OrderItem> getOrderItems(Set<CartItem> cartItems, Order newOrder) {

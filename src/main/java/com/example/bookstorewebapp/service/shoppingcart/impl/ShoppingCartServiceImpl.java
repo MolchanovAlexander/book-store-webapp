@@ -41,6 +41,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    public ShoppingCart getSoppingCartByUserId(Long id) {
+        return checkShoppingCart(id);
+    }
+
+    @Override
     public void update(Long id, UpdateCartItemRequestDto requestDto) {
         cartItemService.updateById(id, requestDto.getQuantity());
     }

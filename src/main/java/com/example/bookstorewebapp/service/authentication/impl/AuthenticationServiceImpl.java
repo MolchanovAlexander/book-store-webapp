@@ -4,6 +4,7 @@ import com.example.bookstorewebapp.dto.user.CreateUserRequestDto;
 import com.example.bookstorewebapp.dto.user.UserLoginRequestDto;
 import com.example.bookstorewebapp.dto.user.UserLoginResponseDto;
 import com.example.bookstorewebapp.dto.user.UserResponseDto;
+import com.example.bookstorewebapp.exception.EntityNotFoundException;
 import com.example.bookstorewebapp.exception.RegistrationException;
 import com.example.bookstorewebapp.mapper.UserMapper;
 import com.example.bookstorewebapp.model.Role;
@@ -53,5 +54,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         );
         String token = jwtUtil.generateToken(authentication.getName());
         return new UserLoginResponseDto(token);
+    }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("There is no user with id:" + id)
+        );
     }
 }
