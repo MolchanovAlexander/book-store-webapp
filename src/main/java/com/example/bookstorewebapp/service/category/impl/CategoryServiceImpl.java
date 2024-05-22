@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    private static final String MESSAGE_CATEGORY_NOT_EXIST = "category";
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
@@ -66,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void isEntityExist(Long id) {
         if (!categoryRepository.existsById(id)) {
             throw new EntityNotFoundException(
-                    "There is no " + MESSAGE_CATEGORY_NOT_EXIST + " with id: " + id
+                    "There is no category with id: " + id
             );
         }
     }
