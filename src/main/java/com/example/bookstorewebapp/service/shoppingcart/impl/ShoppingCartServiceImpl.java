@@ -13,10 +13,9 @@ import com.example.bookstorewebapp.repository.shoppingcart.ShoppingCartRepositor
 import com.example.bookstorewebapp.service.book.BookService;
 import com.example.bookstorewebapp.service.cartitem.CartItemService;
 import com.example.bookstorewebapp.service.shoppingcart.ShoppingCartService;
-import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -50,6 +49,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         cartItemService.updateById(id, requestDto.getQuantity());
     }
 
+    @Transactional
     @Override
     public void save(User user, CreateCartItemRequestDto requestDto) {
         ShoppingCart shoppingCart = checkShoppingCart(user.getId());
@@ -62,16 +62,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private void saveCartItem(
             CreateCartItemRequestDto requestDto, ShoppingCart shoppingCart, CartItem cartItem
     ) {
-        List<CartItem> cartItems = cartItemService
-                .findAllByShoppingCartId(shoppingCart.getId()).stream()
-                .filter(c -> Objects.equals(c.getBook().getId(), requestDto.getBookId()))
-                .toList();
-        if (cartItems.isEmpty()) {
+        CartItem presentItem = shoppingCart.getCartItems().stream()
+                .findFirst().orElse(null);
+        if (presentItem == null
+                || (presentItem != null && !presentItem.getId().equals(cartItem.getId()))) {
             cartItemService.save(cartItem);
         } else {
+
             cartItemService.updateById(
-                    cartItems.get(0).getId(),
-                    requestDto.getQuantity() + cartItems.get(0).getQuantity()
+                    presentItem.getId(),
+                    requestDto.getQuantity() + presentItem.getQuantity()
             );
         }
     }
