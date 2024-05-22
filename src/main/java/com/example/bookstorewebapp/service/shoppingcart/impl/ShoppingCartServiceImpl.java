@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
-    private final ShoppingCartMapper cartMapper;
     private final CartItemService cartItemService;
+    private final ShoppingCartMapper cartMapper;
     private final CartItemMapper cartItemMapper;
     private final BookService bookService;
 
@@ -36,10 +36,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ShoppingCartResponseDto getByUserId(Long id) {
-        ShoppingCart shoppingCart = shoppingCartRepository
-                .findShoppingCartByUserId(id).orElseThrow(
-                        () -> new EntityNotFoundException("There is no cart with id: " + id)
-                );
+        ShoppingCart shoppingCart = checkShoppingCart(id);
         return cartMapper.toDto(shoppingCart);
     }
 
@@ -50,8 +47,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void save(User user, CreateCartItemRequestDto requestDto) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(user.getId())
-                .orElse(createShoppingCart(user));
+        ShoppingCart shoppingCart = checkShoppingCart(user.getId());
         bookService.isExist(requestDto.getBookId());
         CartItem cartItem = cartItemMapper.toModel(requestDto);
         cartItem.setShoppingCart(shoppingCart);
@@ -77,7 +73,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void deleteCartItemById(Long itemId) {
-        cartItemService.deleteById(itemId);
+        cartItemService.deleteByUserId(itemId);
     }
 
     private ShoppingCart checkShoppingCart(Long id) {

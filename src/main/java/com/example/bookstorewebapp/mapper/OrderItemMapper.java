@@ -14,7 +14,7 @@ import org.mapstruct.Named;
 public interface OrderItemMapper {
     @Mapping(target = "order", source = "order")
     @Mapping(target = "price", source = "cartItem", qualifiedByName = "priceCalc")
-    @Mapping(target = "id", source = "cartItem", ignore = true)
+    @Mapping(target = "id", ignore = true)
     OrderItem toModel(CartItem cartItem, Order order);
 
     @Mapping(target = "bookId", source = "book.id")
@@ -22,7 +22,6 @@ public interface OrderItemMapper {
 
     @Named("priceCalc")
     default BigDecimal priceCalc(CartItem cartItem) {
-        System.out.println(" price ------------------");
         return cartItem.getBook().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
     }
 }

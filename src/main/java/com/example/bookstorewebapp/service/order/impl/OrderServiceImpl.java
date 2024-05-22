@@ -48,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
                 () -> new EntityNotFoundException("There is no user with id:" + userId)
         );
         Order newOrder = orderMapper.toModel(requestDto, shoppingCart);
-        Set<CartItem> cartItems = cartItemService.findAllById(userId);
+        Set<CartItem> cartItems = cartItemService.findAllByShoppingCartId(userId);
         List<BigDecimal> priceList = cartItems.stream()
                 .map(c -> c.getBook().getPrice()
                         .multiply(BigDecimal.valueOf(c.getQuantity())))

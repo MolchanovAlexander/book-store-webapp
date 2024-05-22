@@ -9,7 +9,7 @@ public interface CartItemService {
 
     void save(CartItem cartItem);
 
-    void deleteById(Long itemId);
+    void deleteByUserId(Long itemId);
 
     void updateById(Long id, Integer quantity);
 
