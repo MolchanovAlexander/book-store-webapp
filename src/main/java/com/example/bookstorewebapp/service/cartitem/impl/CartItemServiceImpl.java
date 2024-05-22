@@ -28,7 +28,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public Set<CartItem> findAllById(Long id) {
+    public Set<CartItem> findAllByShoppingCartId(Long id) {
         return cartItemRepository.findAllByShoppingCartId(id);
     }
 

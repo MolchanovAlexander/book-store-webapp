@@ -4,7 +4,7 @@ import com.example.bookstorewebapp.model.CartItem;
 import java.util.Set;
 
 public interface CartItemService {
-    Set<CartItem> findAllById(Long id);
+    Set<CartItem> findAllByShoppingCartId(Long id);
 
     void save(CartItem cartItem);
 

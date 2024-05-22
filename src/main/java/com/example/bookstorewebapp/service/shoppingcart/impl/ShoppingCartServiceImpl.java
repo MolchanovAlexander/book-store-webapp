@@ -61,7 +61,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private void saveCartItem(
             CreateCartItemRequestDto requestDto, ShoppingCart shoppingCart, CartItem cartItem
     ) {
-        List<CartItem> cartItems = cartItemService.findAllById(shoppingCart.getId()).stream()
+        List<CartItem> cartItems = cartItemService
+                .findAllByShoppingCartId(shoppingCart.getId()).stream()
                 .filter(c -> Objects.equals(c.getBook().getId(), requestDto.getBookId()))
                 .toList();
         if (cartItems.isEmpty()) {
