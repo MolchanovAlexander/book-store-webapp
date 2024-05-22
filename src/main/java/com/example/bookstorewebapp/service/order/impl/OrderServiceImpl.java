@@ -48,25 +48,14 @@ public class OrderServiceImpl implements OrderService {
                 () -> new EntityNotFoundException("There is no user with id:" + userId)
         );
         Order newOrder = orderMapper.toModel(requestDto, shoppingCart);
-        Set<CartItem> cartItems = cartItemService.findAllByShoppingCartId(userId);
-        List<BigDecimal> priceList = cartItems.stream()
-                .map(c -> c.getBook().getPrice()
-                        .multiply(BigDecimal.valueOf(c.getQuantity())))
-                .toList();
-        BigDecimal total = new BigDecimal(0);
-        for (BigDecimal bigDecimal : priceList) {
-            total = total.add(bigDecimal);
-        }
+        Set<CartItem> cartItems = cartItemService.findAllByShoppingCartId(shoppingCart.getId());
+        BigDecimal total = getTotal(cartItems);
         newOrder.setUser(user);
         newOrder.setOrderDate(LocalDateTime.now());
         newOrder.setStatus(Status.PENDING);
         newOrder.setTotal(total);
-
         orderRepository.save(newOrder);
-        Set<OrderItem> orderItems = cartItems.stream()
-                .map(c -> orderItemMapper.toModel(c, newOrder))
-                .collect(Collectors.toSet());
-        orderItemRepository.saveAll(orderItems);
+        orderItemRepository.saveAll(getOrderItems(cartItems, newOrder));
         cartItemService.deleteAll(cartItems);
     }
 
@@ -114,5 +103,23 @@ public class OrderServiceImpl implements OrderService {
                 );
         order.setStatus(Status.valueOf(requestDto.getStatus()));
         orderRepository.save(order);
+    }
+
+    private BigDecimal getTotal(Set<CartItem> cartItems) {
+        List<BigDecimal> priceList = cartItems.stream()
+                .map(c -> c.getBook().getPrice()
+                        .multiply(BigDecimal.valueOf(c.getQuantity())))
+                .toList();
+        BigDecimal total = new BigDecimal(0);
+        for (BigDecimal bigDecimal : priceList) {
+            total = total.add(bigDecimal);
+        }
+        return total;
+    }
+
+    private Set<OrderItem> getOrderItems(Set<CartItem> cartItems, Order newOrder) {
+        return cartItems.stream()
+                .map(c -> orderItemMapper.toModel(c, newOrder))
+                .collect(Collectors.toSet());
     }
 }
