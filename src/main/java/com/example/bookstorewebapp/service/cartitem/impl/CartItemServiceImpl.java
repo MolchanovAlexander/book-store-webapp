@@ -4,6 +4,7 @@ import com.example.bookstorewebapp.exception.EntityNotFoundException;
 import com.example.bookstorewebapp.model.CartItem;
 import com.example.bookstorewebapp.repository.cartitem.CartItemRepository;
 import com.example.bookstorewebapp.service.cartitem.CartItemService;
+import java.util.Collection;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,15 +29,20 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
+    public void deleteAll(Collection<CartItem> collection) {
+        cartItemRepository.deleteAll(collection);
+    }
+
+    @Override
     public Set<CartItem> findAllByShoppingCartId(Long id) {
         return cartItemRepository.findAllByShoppingCartId(id);
     }
 
     @Override
-    public void deleteById(Long id) {
-        if (!cartItemRepository.existsById(id)) {
-            throw new EntityNotFoundException("There is no cart item with id: " + id);
+    public void deleteByUserId(Long itemId) {
+        if (!cartItemRepository.existsById(itemId)) {
+            throw new EntityNotFoundException("There is no cart item with id:" + itemId);
         }
-        cartItemRepository.deleteById(id);
+        cartItemRepository.deleteById(itemId);
     }
 }
