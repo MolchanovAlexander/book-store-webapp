@@ -65,7 +65,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         CartItem presentItem = shoppingCart.getCartItems().stream()
                 .findFirst().orElse(null);
         if (presentItem == null
-                || (presentItem != null && !presentItem.getId().equals(cartItem.getId()))) {
+                || (presentItem != null
+                && !presentItem.getBook().getId().equals(cartItem.getBook().getId()))) {
             cartItemService.save(cartItem);
         } else {
 
