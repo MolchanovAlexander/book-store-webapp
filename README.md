@@ -110,5 +110,8 @@ POST http://localhost:8088/api/books
 
 5. See this video - [How it works](https://www.loom.com/share/d9c9e98bd3e944c98975e8a004696c36?sid=a39d197c-43ae-4670-aac7-f7a1f121b173)
 
-## Contributing
-Contributions are welcome! Please fork the repository and create a pull request with your changes.
+## Deployed on AWS web application already working.
+ [swagger link](http://ec2-18-209-5-115.compute-1.amazonaws.com/api/swagger-ui/index.html#/)
+
+## My profile on LinkedIn
+ [my linkedin](https://www.linkedin.com/in/oleksandr-molchanov-438861226/)
