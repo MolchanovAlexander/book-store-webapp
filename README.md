@@ -57,33 +57,58 @@ This is a web application for managing a book store, written in Java. The applic
     ```sh
     mvn clean install
    
-4. Run the application using Docker Compose:
+### Usage
+
+1. Run the application using Docker Compose:
     ```sh
     docker-compose up --build
 
-5. Access the application at http://localhost:8088 via Postman or use [swagger](http://localhost:8088/api/swagger-ui/index.html#)
+2. Access the application at http://localhost:8088 via Postman or use [swagger](http://localhost:8088/api/swagger-ui/index.html#)
    The database contains admin and test user that have different roles 
    ![login user](pictures/5.png)
 
-   <span style="color: coral; font-weight: bold;">**Default admin credentials** "email": "admin@admin.com", "password":"1234"</span><br>
-   <span style="color: lightblue; font-weight: bold;">**Default user credentials** "email": "alice@alice.com", "password":"1234"</span> 
-
-
-6. Create a few categories by sending request bodies like this
-   POST http://localhost:8088/api/categories
-
-   ```  
-   
+<span style="color: coral; font-weight: bold;">**Default admin credentials** </span><br>
+```json
    {
-    "name":"Other",
-    "description": "Other categories"
+      "email": "admin@admin.com",
+      "password": "1234"
    }
    ``` 
-7. Create a few books by sending request bodies like this
+
+<span style="color: lightblue; font-weight: bold;">**Default user credentials** </span>
+```json
+   {
+      "email": "alice@alice.com",
+      "password": "1234"
+   }
+   ```
+
+3. Create a few categories by sending request bodies like this
+   POST http://localhost:8088/api/categories
+
+```json
+   {
+       "name":"Other",
+       "description": "Other categories"
+   }
+   ``` 
+4. Create a few books by sending request bodies like this
 POST http://localhost:8088/api/books
+```json
+   {
+      "title":"Tailwind",
+      "author":"Human being",
+      "isbn":"ISBN 978-1-721-99993-7",
+      "price": 10.56,
+      "coverImage":"your image url",
+      "description": "Description of book",
+      "categoryIds": [1, 2]
+   }
+   ``` 
+
    ![post books](pictures/6.png)
 
-8. See this video - [How it works](https://www.loom.com/share/d9c9e98bd3e944c98975e8a004696c36?sid=a39d197c-43ae-4670-aac7-f7a1f121b173)
+5. See this video - [How it works](https://www.loom.com/share/d9c9e98bd3e944c98975e8a004696c36?sid=a39d197c-43ae-4670-aac7-f7a1f121b173)
 
 ## Contributing
 Contributions are welcome! Please fork the repository and create a pull request with your changes.
