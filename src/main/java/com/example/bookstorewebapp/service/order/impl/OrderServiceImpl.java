@@ -10,6 +10,7 @@ import com.example.bookstorewebapp.mapper.OrderMapper;
 import com.example.bookstorewebapp.model.CartItem;
 import com.example.bookstorewebapp.model.Order;
 import com.example.bookstorewebapp.model.OrderItem;
+import com.example.bookstorewebapp.model.Role;
 import com.example.bookstorewebapp.model.ShoppingCart;
 import com.example.bookstorewebapp.model.Status;
 import com.example.bookstorewebapp.model.User;
@@ -84,9 +85,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderResponseDto> getAllOrders(Long userId, Pageable pageable) {
-        return orderRepository.findAll(pageable).stream()
-                .map(orderMapper::toDto)
-                .toList();
+        if (authenticationService.findById(userId).getRoles().stream()
+                .map(r -> r.getRole())
+                .toList()
+                .contains(Role.RoleName.ADMIN)) {
+            return orderRepository.findAll(pageable).stream()
+                    .map(orderMapper::toDto)
+                    .toList();
+        } else {
+            return orderRepository.findOrderByUserId(userId, pageable).stream()
+                    .map(orderMapper::toDto)
+                    .toList();
+        }
+
     }
 
     @Override

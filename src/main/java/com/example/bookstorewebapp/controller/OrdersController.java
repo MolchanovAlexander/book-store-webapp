@@ -80,7 +80,6 @@ public class OrdersController {
             summary = "Get user's order",
             description = "get  user's order "
     )
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public List<OrderResponseDto> getOrders(
             Authentication authentication,
