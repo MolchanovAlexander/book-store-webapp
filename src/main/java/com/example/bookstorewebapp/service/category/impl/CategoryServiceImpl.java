@@ -10,9 +10,11 @@ import com.example.bookstorewebapp.service.category.CategoryService;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @RequiredArgsConstructor
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -35,6 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryResponseDto> findAll(Pageable pageable) {
+        log.info("This is a demo method! Imagine it is executing ms");
         return categoryRepository.findAll(pageable).stream()
                 .map(categoryMapper::toDto)
                 .toList();
