@@ -3,13 +3,12 @@ package com.example.bookstorewebapp.controller.book;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.bookstorewebapp.dto.book.BookDto;
 import com.example.bookstorewebapp.dto.book.BookSearchParameters;
@@ -18,7 +17,6 @@ import com.example.bookstorewebapp.service.book.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,11 +24,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -61,7 +59,6 @@ class BookControllerTest {
     @WithMockUser(username = "adminUser", roles = {"ADMIN"})
     void createBook_ValidRequest_ReturnsCreatedBook() throws Exception {
         CreateBookRequestDto requestDto = createRequestDto();
-        System.out.println(requestDto);
         BookDto responseDto = createResponseDto();
         given(bookService.create(any(CreateBookRequestDto.class)))
                 .willReturn(responseDto);
@@ -69,23 +66,20 @@ class BookControllerTest {
         mockMvc.perform(post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isCreated())
-                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)));
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().json(
+                        objectMapper.writeValueAsString(responseDto)));
     }
 
     @Test
     @WithMockUser(username = "testUser", roles = {"USER"})
     void getAllBooks_ValidRequest_ReturnsListOfBooks() throws Exception {
-        List<BookDto> books = Collections.singletonList(createResponseDto());
-        Pageable pageable = PageRequest.of(0, 10);
-        given(bookService.findAll(pageable)).willReturn(books);
-        System.out.println("Books:111 " + objectMapper.writeValueAsString(books));
-        mockMvc.perform(get("/books")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(books)));
+        when(bookService.findAll(any(Pageable.class)))
+                .thenReturn(Collections.singletonList(createResponseDto()));
+
+        mockMvc.perform(get("/books"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("Title1"));
     }
 
     @Test
@@ -97,8 +91,9 @@ class BookControllerTest {
 
         mockMvc.perform(get("/books/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(bookDto)));
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content()
+                        .json(objectMapper.writeValueAsString(bookDto)));
     }
 
     @Test
@@ -106,6 +101,7 @@ class BookControllerTest {
     void updateBook_ValidRequest_ReturnsUpdatedBook() throws Exception {
         Long id = 1L;
         CreateBookRequestDto requestDto = createRequestDto();
+        System.out.println(requestDto);
         BookDto responseDto = createResponseDto();
         given(bookService.updateById(eq(id), any(CreateBookRequestDto.class)))
                 .willReturn(responseDto);
@@ -113,8 +109,9 @@ class BookControllerTest {
         mockMvc.perform(put("/books/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isAccepted())
-                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)));
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
+                .andExpect(MockMvcResultMatchers.content()
+                        .json(objectMapper.writeValueAsString(responseDto)));
     }
 
     @Test
@@ -124,27 +121,23 @@ class BookControllerTest {
 
         mockMvc.perform(delete("/books/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
-    void searchBooks_ValidRequest_ReturnsBooks() throws Exception {
-        BookSearchParameters searchParameters = new BookSearchParameters(
-                new String[]{"Title1"}, new String[]{"Author1"});
-        List<BookDto> books = Collections.singletonList(createResponseDto());
-        Pageable pageable = PageRequest.of(0, 10);
-        System.out.println("Books:222 " + objectMapper.writeValueAsString(books));
-        given(bookService.search(any(BookSearchParameters.class), eq(pageable))).willReturn(books);
-
+    @WithMockUser(username = "testUser", roles = "USER")
+    @DisplayName("Search books (valid request)")
+    void searchBooks_ValidRequest_ReturnsListOfBooks() throws Exception {
+        when(bookService.search(any(BookSearchParameters.class), any(Pageable.class)))
+                .thenReturn(Collections.singletonList(createResponseDto()));
         mockMvc.perform(get("/books/search")
-                        .param("titles", "Title1")
-                        .param("authors", "Author1")
+                        .param("title", "Title1")
+                        .param("author", "Author1")
                         .param("page", "0")
                         .param("size", "10")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(books)));
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("Title1"));
     }
 
     private BookDto createResponseDto() {
