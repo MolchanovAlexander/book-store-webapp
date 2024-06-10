@@ -10,6 +10,7 @@ services:
       - DB_LOGIN=$DB_LOGIN
       - MYSQL_ROOT_PASSWORD=$MYSQL_PASSWORD
       - MYSQL_DATABASE=$MYSQL_DATABASE
+    # noinspection ComposeUnknownValues
     ports:
       - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
     healthcheck:
