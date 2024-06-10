@@ -12,7 +12,9 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -84,7 +86,7 @@ public class OrdersController {
     @GetMapping
     public List<OrderResponseDto> getOrders(
             Authentication authentication,
-            Pageable pageable
+            @ParameterObject @PageableDefault(size = 20, sort = "id") Pageable pageable
     ) {
         User user = (User) authentication.getPrincipal();
         return orderService.getAllOrders(user.getId(), pageable);

@@ -32,8 +32,8 @@ public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
 
     @Operation(
-            summary = "Create ShoppingCart",
-            description = "create ShoppingCart entity after first query"
+            summary = "Add item to your ShoppingCart.",
+            description = "Add item to your ShoppingCart."
     )
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -46,8 +46,8 @@ public class ShoppingCartController {
     }
 
     @Operation(
-            summary = "Update ShoppingCart",
-            description = "update ShoppingCart entity after first query"
+            summary = "Update ShoppingCart item.",
+            description = "update ShoppingCart item by id."
     )
     @PutMapping("/cart-items/{itemId}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
@@ -59,8 +59,8 @@ public class ShoppingCartController {
     }
 
     @Operation(
-            summary = "Get ShoppingCart",
-            description = "get ShoppingCart entity "
+            summary = "Get ShoppingCart.",
+            description = "get your ShoppingCart entity."
     )
     @GetMapping
     public ShoppingCartResponseDto getShoppingCart(
