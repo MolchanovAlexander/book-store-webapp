@@ -79,7 +79,7 @@ class BookControllerTest {
         List<BookDto> books = Collections.singletonList(createResponseDto());
         Pageable pageable = PageRequest.of(0, 10);
         given(bookService.findAll(pageable)).willReturn(books);
-
+        System.out.println("Books:111 " + objectMapper.writeValueAsString(books));
         mockMvc.perform(get("/books")
                         .param("page", "0")
                         .param("size", "10")
@@ -106,7 +106,6 @@ class BookControllerTest {
     void updateBook_ValidRequest_ReturnsUpdatedBook() throws Exception {
         Long id = 1L;
         CreateBookRequestDto requestDto = createRequestDto();
-        System.out.println(requestDto);
         BookDto responseDto = createResponseDto();
         given(bookService.updateById(eq(id), any(CreateBookRequestDto.class)))
                 .willReturn(responseDto);
@@ -135,7 +134,7 @@ class BookControllerTest {
                 new String[]{"Title1"}, new String[]{"Author1"});
         List<BookDto> books = Collections.singletonList(createResponseDto());
         Pageable pageable = PageRequest.of(0, 10);
-
+        System.out.println("Books:222 " + objectMapper.writeValueAsString(books));
         given(bookService.search(any(BookSearchParameters.class), eq(pageable))).willReturn(books);
 
         mockMvc.perform(get("/books/search")
@@ -156,6 +155,7 @@ class BookControllerTest {
         bookDto.setIsbn("ISBN 978-1-721-11223-7");
         bookDto.setPrice(BigDecimal.TEN);
         bookDto.setDescription("Description1");
+        bookDto.setCategoryIds(Set.of(1L));
         return bookDto;
     }
 

@@ -21,7 +21,6 @@ class BookRepositoryTest {
     private static final String TITLE = "Test Book Title";
     @Autowired
     private BookRepository bookRepository;
-
     @Autowired
     private CategoryRepository categoryRepository;
     private Book testBook;
