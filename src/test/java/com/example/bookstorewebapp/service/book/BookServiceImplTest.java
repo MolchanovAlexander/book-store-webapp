@@ -1,7 +1,7 @@
 package com.example.bookstorewebapp.service.book;
 
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -33,7 +33,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 public class BookServiceImplTest {
-
     @Mock
     private BookRepository bookRepository;
 
@@ -77,9 +76,10 @@ public class BookServiceImplTest {
 
         when(bookRepository.existsById(bookId)).thenReturn(false);
 
-        assertThrows(EntityNotFoundException.class, () -> {
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
             bookService.updateById(bookId, requestDto);
         });
+        assertEquals("There is no book with id: " + bookId, exception.getMessage());
     }
 
     @Test

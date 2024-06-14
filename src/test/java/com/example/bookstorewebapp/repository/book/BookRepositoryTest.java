@@ -1,12 +1,15 @@
 package com.example.bookstorewebapp.repository.book;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import com.example.bookstorewebapp.model.Book;
 import com.example.bookstorewebapp.model.Category;
 import com.example.bookstorewebapp.repository.category.CategoryRepository;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,29 +42,28 @@ class BookRepositoryTest {
         testBook.setCategories(Set.of(category));
         testBook.setTitle(TITLE);
         bookRepository.save(testBook);
-        System.out.println(bookRepository.findAll());
     }
 
     @Test
     @DisplayName("Find all books by category id")
     void findAllByCategoryId_Id1_ReturnsNotEmptyList() {
         List<Book> actual = bookRepository.findAllByCategoryId(1L, Pageable.unpaged());
-        Assertions.assertEquals(1, actual.size());
-        Assertions.assertEquals(testBook.getId(), actual.get(0).getId());
+        assertEquals(1, actual.size());
+        assertEquals(testBook.getId(), actual.get(0).getId());
     }
 
     @Test
     void findAll() {
         List<Book> books = bookRepository.findAll(Pageable.unpaged()).getContent();
-        Assertions.assertFalse(books.isEmpty());
-        Assertions.assertEquals(1, books.size());
-        Assertions.assertEquals(testBook.getId(), books.get(0).getId());
+        assertFalse(books.isEmpty());
+        assertEquals(1, books.size());
+        assertEquals(testBook.getId(), books.get(0).getId());
     }
 
     @Test
     void findById() {
         Book foundBook = bookRepository.findById(testBook.getId()).orElse(null);
-        Assertions.assertNotNull(foundBook);
-        Assertions.assertEquals(testBook.getId(), foundBook.getId());
+        assertNotNull(foundBook);
+        assertEquals(testBook.getId(), foundBook.getId());
     }
 }
