@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,6 +17,7 @@ import com.example.bookstorewebapp.repository.book.BookRepository;
 import com.example.bookstorewebapp.repository.book.BookSpecificationBuilder;
 import com.example.bookstorewebapp.service.book.impl.BookServiceImpl;
 import com.example.bookstorewebapp.service.category.CategoryService;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -52,26 +52,25 @@ public class BookServiceImplTest {
     @Test
     @DisplayName("Create Book successfully")
     void createBook_Success() {
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
-        requestDto.setCategoryIds(Set.of(1L, 2L));
-        Book book = new Book();
-        BookDto responseDto = new BookDto();
+        CreateBookRequestDto requestDto = createRequestDto();
+        Book book = createBook();
+        BookDto responseDto = createResponseDto();
 
         doNothing().when(categoryService).isAllCategoriesPresent(requestDto.getCategoryIds());
         when(bookMapper.toModel(requestDto)).thenReturn(book);
-        when(bookRepository.save(any(Book.class))).thenReturn(book);
+        when(bookRepository.save(book)).thenReturn(book);
         when(bookMapper.toDto(book)).thenReturn(responseDto);
 
         BookDto actual = bookService.create(requestDto);
 
-        verify(bookRepository, times(1)).save(any(Book.class));
+        verify(bookRepository).save(book);
         assertEquals(actual, responseDto);
     }
 
     @Test
     @DisplayName("Update Book by ID throws EntityNotFoundException when book does not exist")
     void updateBookById_ThrowsEntityNotFoundException_WhenBookNotExist() {
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
+        CreateBookRequestDto requestDto = createRequestDto();
         requestDto.setCategoryIds(Set.of(1L, 2L));
 
         when(bookRepository.existsById(bookId)).thenReturn(false);
@@ -85,16 +84,16 @@ public class BookServiceImplTest {
     @Test
     @DisplayName("Find Book by ID returns book")
     void findBookById_ReturnsBook() {
-        Book book = new Book();
+        Book book = createBook();
         book.setId(bookId);
-        BookDto responseDto = new BookDto();
+        BookDto responseDto = createResponseDto();
 
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
         when(bookMapper.toDto(book)).thenReturn(responseDto);
 
         BookDto actual = bookService.findById(bookId);
 
-        verify(bookRepository, times(1)).findById(bookId);
+        verify(bookRepository).findById(bookId);
         assertEquals(actual, responseDto);
     }
 
@@ -115,7 +114,7 @@ public class BookServiceImplTest {
 
         bookService.deleteById(bookId);
 
-        verify(bookRepository, times(1)).deleteById(bookId);
+        verify(bookRepository).deleteById(bookId);
     }
 
     @Test
@@ -132,15 +131,15 @@ public class BookServiceImplTest {
     @DisplayName("Find all Books returns books")
     void findAllBooks_ReturnsBooks() {
         Pageable pageable = Pageable.unpaged();
-        Book book = new Book();
-        BookDto responseDto = new BookDto();
+        Book book = createBook();
+        BookDto responseDto = createResponseDto();
 
         when(bookRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(book)));
         when(bookMapper.toDto(book)).thenReturn(responseDto);
 
         List<BookDto> actual = bookService.findAll(pageable);
 
-        verify(bookRepository, times(1)).findAll(pageable);
+        verify(bookRepository).findAll(pageable);
         assertEquals(List.of(responseDto), actual);
     }
 
@@ -150,8 +149,8 @@ public class BookServiceImplTest {
         Pageable pageable = Pageable.unpaged();
         BookSearchParameters params = new BookSearchParameters(
                 new String[]{"Title1"}, new String[]{"Author1"});
-        Book book = new Book();
-        BookDto responseDto = new BookDto();
+        Book book = createBook();
+        BookDto responseDto = createResponseDto();
 
         when(specificationBuilder.build(params)).thenReturn((Specification<Book>)
                 (root, query, criteriaBuilder) -> criteriaBuilder.conjunction());
@@ -161,8 +160,43 @@ public class BookServiceImplTest {
 
         List<BookDto> actual = bookService.search(params, pageable);
 
-        verify(bookRepository, times(1))
+        verify(bookRepository)
                 .findAll(any(Specification.class), any(Pageable.class));
         assertEquals(List.of(responseDto), actual);
+    }
+
+    private CreateBookRequestDto createRequestDto() {
+        CreateBookRequestDto requestDto = new CreateBookRequestDto();
+        requestDto.setIsbn("ISBN 978-1-721-11223-7");
+        requestDto.setTitle("Title1");
+        requestDto.setAuthor("Author1");
+        requestDto.setIsbn("ISBN 978-1-721-11223-7");
+        requestDto.setPrice(BigDecimal.TEN);
+        requestDto.setDescription("Description1");
+        requestDto.setCategoryIds(Set.of(1L));
+        return requestDto;
+    }
+
+    private Book createBook() {
+        Book book = new Book();
+        book.setIsbn("ISBN 978-1-721-11223-7");
+        book.setTitle("Title1");
+        book.setAuthor("Author1");
+        book.setIsbn("ISBN 978-1-721-11223-7");
+        book.setPrice(BigDecimal.TEN);
+        book.setDescription("Description1");
+        return book;
+    }
+
+    private BookDto createResponseDto() {
+        BookDto bookDto = new BookDto();
+        bookDto.setId(1L);
+        bookDto.setTitle("Title1");
+        bookDto.setAuthor("Author1");
+        bookDto.setIsbn("ISBN 978-1-721-11223-7");
+        bookDto.setPrice(BigDecimal.TEN);
+        bookDto.setDescription("Description1");
+        bookDto.setCategoryIds(Set.of(1L));
+        return bookDto;
     }
 }
