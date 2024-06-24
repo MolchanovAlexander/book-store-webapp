@@ -21,3 +21,9 @@ databaseChangeLog:
       file: db/changelog/changes/10-create-orders-table.yaml
   - include:
       file: db/changelog/changes/11-create-order-items-table.yaml
+  - include:
+      file: db/changelog/changes/12-add-column-author-name-table.yaml
+  - include:
+      file: db/changelog/changes/13-copy-column-author-to-author-name.yaml
+  - include:
+      file: db/changelog/changes/14-drop-author-column.yaml

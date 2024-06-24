@@ -17,11 +17,13 @@ import org.mapstruct.MappingTarget;
 public interface BookMapper {
 
     @Mapping(target = "categoryIds", ignore = true)
+    @Mapping(target = "author", source = "author_name")
     BookDto toDto(Book book);
 
     BookDtoWithoutCategories toDtoWithoutCategories(Book book);
 
     @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "author_name", source = "author")
     Book toModel(CreateBookRequestDto requestDto);
 
     @AfterMapping

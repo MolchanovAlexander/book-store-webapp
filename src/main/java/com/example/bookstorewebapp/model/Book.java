@@ -30,8 +30,7 @@ public class Book {
     private Long id;
     @Column(nullable = false)
     private String title;
-    @Column(nullable = false)
-    private String author;
+    private String author_name;
     @Column(unique = true, nullable = false)
     private String isbn;
     @Column(nullable = false)
